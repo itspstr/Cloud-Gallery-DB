@@ -40,7 +40,7 @@
         @media (min-width: 1024px) { 
             .mobile-tabs { display: none; } 
             .content-grid { display: grid; grid-template-columns: 420px 1fr; gap: 16px; align-items: start; } 
-            .tab-content { display: block !important; }
+            #formTabContent, #listTabContent { display: block !important; }
         }
 
         .dashboard-panel, .list-panel { background: var(--card-bg); padding: 18px; border-radius: var(--radius-md); box-shadow: var(--shadow-soft); border: 1px solid var(--border-light); }
@@ -64,7 +64,6 @@
         
         .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; margin: 2px; }
         .btn-whatsapp { background-color: var(--whatsapp); color: white; box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3); }
-        .btn-whatsapp svg { width: 14px; height: 14px; fill: currentColor; }
         .btn-del { background-color: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
         .btn-edit { background-color: #e0e7ff; color: var(--primary); border: 1px solid #c7d2fe; }
         .btn-sold { background-color: #fef3c7; color: var(--sold-color); border: 1px solid #fde68a; }
@@ -75,7 +74,6 @@
         .stat-card p { font-size: 16px; font-weight: 900; color: var(--primary-dark); margin-top: 6px; }
 
         .manage-bar { display: none; background: #e0e7ff; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 12px; gap: 10px; align-items: center; border: 1px solid #c7d2fe; }
-        .manage-bar.active { display: flex; flex-wrap: wrap; }
         .bulk-checkbox { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
 
         .table-controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
@@ -87,16 +85,15 @@
         tr:hover { background: #f1f5f9; }
         
         .sold-item td { text-decoration: line-through; opacity: 0.65; background-color: #f8fafc; }
-        .sold-badge { display: inline-block; background: var(--sold-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; margin-left: 6px; text-decoration: none !important; }
+        .sold-badge { display: inline-block; background: var(--sold-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; margin-left: 6px; }
         .supplier-info { font-size: 10.5px; color: var(--text-muted); display: block; margin-top: 4px; font-weight: 600;}
-        .acc-tags { font-size: 10px; background: #e0e7ff; padding: 3px 6px; border-radius: 6px; color: var(--primary-dark); margin-right: 4px; font-weight: 700; border: 1px solid #c7d2fe; display: inline-block; text-decoration: none !important;}
+        .acc-tags { font-size: 10px; background: #e0e7ff; padding: 3px 6px; border-radius: 6px; color: var(--primary-dark); margin-right: 4px; font-weight: 700; border: 1px solid #c7d2fe; display: inline-block;}
         .actions-cell { display: flex; gap: 8px; flex-wrap: wrap; }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
 
         #toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.4s ease; z-index: 9999; display: flex; align-items: center; gap: 10px; }
         #toast.show { transform: translateY(0); opacity: 1; }
+        
+        .app-version { text-align: center; font-size: 12px; font-weight: 900; color: var(--text-muted); margin-top: 20px; padding-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -109,112 +106,109 @@
         </div>
 
         <div class="mobile-tabs">
-            <!-- FIXED: Added correct IDs here so the JS can find them! -->
-            <button type="button" class="tab-btn active" id="btnTabForm" onclick="switchTab('form')">➕ Add Entry</button>
-            <button type="button" class="tab-btn" id="btnTabList" onclick="switchTab('list')">📦 Stock List</button>
+            <button type="button" class="tab-btn active" id="btnTabForm" onclick="CloudGallery.switchTab('form')">➕ Add Entry</button>
+            <button type="button" class="tab-btn" id="btnTabList" onclick="CloudGallery.switchTab('list')">📦 Stock List</button>
         </div>
 
         <div class="content-grid">
-            <div class="dashboard-panel tab-content active" id="formTabContent">
-                <form id="inventoryForm" onsubmit="event.preventDefault(); return false;">
-                    <input type="hidden" id="editId" value="">
-                    
-                    <div class="form-section-title">📱 Item Info</div>
+            <!-- Completely removed <form> tag to prevent mobile refresh bugs -->
+            <div class="dashboard-panel" id="formTabContent" style="display: block;">
+                <input type="hidden" id="editId" value="">
+                
+                <div class="form-section-title">📱 Item Info</div>
+                <div class="form-group">
+                    <label>📅 Entry Date</label>
+                    <input type="date" id="entryDate">
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Item Name / Model</label>
+                    <input type="text" id="itemName" placeholder="e.g. iPhone 15 Pro Max" list="itemNamesList">
+                    <datalist id="itemNamesList"></datalist>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
-                        <label>📅 Entry Date</label>
-                        <input type="date" id="entryDate">
+                        <label>📂 Category</label>
+                        <select id="itemCategory">
+                            <option value="Phones (Old/Used)">Phones (Old/Used)</option>
+                            <option value="Phones (New)">Phones (New)</option>
+                            <option value="Audio & Speakers">Audio & Speakers</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
                     </div>
                     <div class="form-group">
-                        <label>🏷️ Item Name / Model</label>
-                        <input type="text" id="itemName" placeholder="e.g. iPhone 15 Pro Max" list="itemNamesList">
-                        <datalist id="itemNamesList"></datalist>
+                        <label>🔢 IMEI / Serial (15 Digits)</label>
+                        <input type="text" id="itemImei" placeholder="Scan or Type..." maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📂 Category</label>
-                            <select id="itemCategory">
-                                <option value="Phones (Old/Used)">Phones (Old/Used)</option>
-                                <option value="Phones (New)">Phones (New)</option>
-                                <option value="Audio & Speakers">Audio & Speakers</option>
-                                <option value="Accessories">Accessories</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>🔢 IMEI / Serial (15 Digits)</label>
-                            <input type="text" id="itemImei" placeholder="Scan or Type..." maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                        </div>
-                    </div>
+                </div>
 
-                    <div class="form-section-title">🏢 Supplier / Purchased From</div>
+                <div class="form-section-title">🏢 Supplier / Purchased From</div>
+                <div class="form-group">
+                    <label>👤 Person / Shop Name</label>
+                    <input type="text" id="supplierName" placeholder="e.g. Prince Mobile / Meerut" list="supplierNamesList">
+                    <datalist id="supplierNamesList"></datalist>
+                </div>
+                <div class="form-row">
                     <div class="form-group">
-                        <label>👤 Person / Shop Name</label>
-                        <input type="text" id="supplierName" placeholder="e.g. Prince Mobile / Meerut" list="supplierNamesList">
-                        <datalist id="supplierNamesList"></datalist>
+                        <label>📞 Phone Number</label>
+                        <input type="text" id="supplierPhone" placeholder="10 Digits" list="supplierPhonesList" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
+                        <datalist id="supplierPhonesList"></datalist>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📞 Phone Number</label>
-                            <input type="text" id="supplierPhone" placeholder="10 Digits" list="supplierPhonesList" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                            <datalist id="supplierPhonesList"></datalist>
-                        </div>
-                        <div class="form-group">
-                            <label>📍 Location / Address</label>
-                            <input type="text" id="supplierAddress" placeholder="e.g. Saket, Meerut" list="supplierAddressList">
-                            <datalist id="supplierAddressList"></datalist>
-                        </div>
+                    <div class="form-group">
+                        <label>📍 Location / Address</label>
+                        <input type="text" id="supplierAddress" placeholder="e.g. Saket, Meerut" list="supplierAddressList">
+                        <datalist id="supplierAddressList"></datalist>
                     </div>
+                </div>
 
-                    <div class="form-section-title">🔌 Included Accessories</div>
-                    <div class="checkbox-grid" id="accessoriesGrid">
-                        <div class="checkbox-item"><input type="checkbox" id="accBox" value="Box"><label for="accBox">📦 Box</label></div>
-                        <div class="checkbox-item"><input type="checkbox" id="accAdapter" value="Adapter"><label for="accAdapter">🔌 Adapter</label></div>
-                        <div class="checkbox-item"><input type="checkbox" id="accCable" value="Cable"><label for="accCable">⚡ Cable</label></div>
-                        <div class="checkbox-item"><input type="checkbox" id="accBill" value="Bill"><label for="accBill">🧾 Bill</label></div>
-                        <div class="checkbox-item"><input type="checkbox" id="accEarphones" value="Earphones"><label for="accEarphones">🎧 Earphones</label></div>
-                    </div>
+                <div class="form-section-title">🔌 Included Accessories</div>
+                <div class="checkbox-grid" id="accessoriesGrid">
+                    <div class="checkbox-item"><input type="checkbox" id="accBox" value="Box"><label for="accBox">📦 Box</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="accAdapter" value="Adapter"><label for="accAdapter">🔌 Adapter</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="accCable" value="Cable"><label for="accCable">⚡ Cable</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="accBill" value="Bill"><label for="accBill">🧾 Bill</label></div>
+                    <div class="checkbox-item"><input type="checkbox" id="accEarphones" value="Earphones"><label for="accEarphones">🎧 Earphones</label></div>
+                </div>
 
-                    <div class="form-section-title">💰 Pricing & Quantity</div>
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>📉 Buy Price (₹)</label>
-                            <input type="number" id="purchasePrice" placeholder="0" min="0">
-                        </div>
-                        <div class="form-group">
-                            <label>📈 Sell Price (₹)</label>
-                            <input type="number" id="sellingPrice" placeholder="0" min="0">
-                        </div>
-                        <div class="form-group" style="grid-column: span 2;">
-                            <label>📦 Total Quantity</label>
-                            <input type="number" id="itemQty" value="1" min="1">
-                        </div>
+                <div class="form-section-title">💰 Pricing & Quantity</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📉 Buy Price (₹)</label>
+                        <input type="number" id="purchasePrice" placeholder="0" min="0">
                     </div>
+                    <div class="form-group">
+                        <label>📈 Sell Price (₹)</label>
+                        <input type="number" id="sellingPrice" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>📦 Total Quantity</label>
+                        <input type="number" id="itemQty" value="1" min="1">
+                    </div>
+                </div>
 
-                    <div class="form-row" style="margin-top: 10px;">
-                        <!-- FIXED: Added correct ID here so JS can reset its text! -->
-                        <button type="button" class="btn btn-primary" id="btnSaveData" onclick="handleFormSubmit()">💾 Save Entry</button>
-                        <button type="button" class="btn btn-outline" onclick="resetForm()">✖ Clear</button>
-                    </div>
+                <div class="form-row" style="margin-top: 10px;">
+                    <button type="button" class="btn btn-primary" id="actionSaveBtn" onclick="CloudGallery.handleFormSubmit()">💾 Save Entry</button>
+                    <button type="button" class="btn btn-outline" onclick="CloudGallery.resetForm()">✖ Clear</button>
+                </div>
 
-                    <div class="stats-grid">
-                        <div class="stat-card"><h3>📦 Total Items</h3><p id="statTotalItems">0</p></div>
-                        <div class="stat-card"><h3>💰 Stock Value</h3><p id="statTotalValue">₹0</p></div>
-                        <div class="stat-card"><h3>🗂️ Categories</h3><p id="statCategories">0</p></div>
-                    </div>
-                </form>
+                <div class="stats-grid">
+                    <div class="stat-card"><h3>📦 Total Items</h3><p id="statTotalItems">0</p></div>
+                    <div class="stat-card"><h3>💰 Stock Value</h3><p id="statTotalValue">₹0</p></div>
+                    <div class="stat-card"><h3>🗂️ Categories</h3><p id="statCategories">0</p></div>
+                </div>
             </div>
 
             <!-- List Panel -->
-            <div class="list-panel tab-content" id="listTabContent">
+            <div class="list-panel" id="listTabContent" style="display: none;">
                 <div class="table-controls">
                     <div class="form-group search-bar" style="margin: 0;">
-                        <input type="text" id="searchInput" placeholder="🔍 Search Item, IMEI, or Supplier..." onkeyup="renderTable()">
+                        <input type="text" id="searchInput" placeholder="🔍 Search Item, IMEI, or Supplier..." onkeyup="CloudGallery.renderTable()">
                     </div>
-                    <button type="button" class="btn btn-outline" style="width: auto; padding: 12px 20px;" onclick="toggleManageMode()">⚙️ Manage</button>
+                    <button type="button" class="btn btn-outline" style="width: auto; padding: 12px 20px;" onclick="CloudGallery.toggleManageMode()">⚙️ Manage</button>
                 </div>
 
                 <div class="manage-bar" id="manageBar">
-                    <button type="button" class="action-btn" style="background: var(--primary);" onclick="downloadCSV()">📊 Download CSV</button>
-                    <button type="button" class="action-btn btn-del" onclick="deleteSelected()">🗑️ Delete Selected</button>
+                    <button type="button" class="action-btn" style="background: var(--primary);" onclick="CloudGallery.downloadCSV()">📊 Download CSV</button>
+                    <button type="button" class="action-btn btn-del" onclick="CloudGallery.deleteSelected()">🗑️ Delete Selected</button>
                     <span style="font-size: 11px; color: var(--primary-dark); font-weight: 700; margin-left: auto;">(Downloads full data if none selected)</span>
                 </div>
 
@@ -222,7 +216,7 @@
                     <table id="inventoryTable">
                         <thead>
                             <tr>
-                                <th id="thCheckbox" style="display: none; width: 40px;"><input type="checkbox" id="selectAllCb" class="bulk-checkbox" onclick="toggleSelectAll()"></th>
+                                <th id="thCheckbox" style="display: none; width: 40px;"><input type="checkbox" id="selectAllCb" class="bulk-checkbox" onclick="CloudGallery.toggleSelectAll()"></th>
                                 <th>📱 Item Details</th>
                                 <th>🔢 IMEI / Stock</th>
                                 <th>🏢 Supplier Info</th>
@@ -235,76 +229,78 @@
                 </div>
             </div>
         </div>
+        
+        <!-- VISUAL CONFIRMATION: Ensures the new code loaded -->
+        <div class="app-version">App Version: 2.0 (Solid Core)</div>
     </div>
 
     <div id="toast">✨ <span id="toastMsg">Notification</span></div>
 
     <script>
-        // ==========================================
-        var GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwVZagYANYt_89QMI0sEOey2b3ahjTGOx3hbYdpmdIvucB2lL3N1PwHoBk-Bt_nt21Pxg/exec"; 
-        // ==========================================
+        // Highly protected global object
+        window.CloudGallery = {
+            inventory: [],
+            isManageMode: false,
+            sheetUrl: "https://script.google.com/macros/s/AKfycbwVZagYANYt_89QMI0sEOey2b3ahjTGOx3hbYdpmdIvucB2lL3N1PwHoBk-Bt_nt21Pxg/exec",
 
-        var inventory = [];
-        var isManageMode = false;
+            init: function() {
+                try {
+                    var stored = window.localStorage.getItem('cg_inventory_final');
+                    if(stored) {
+                        this.inventory = JSON.parse(stored);
+                    }
+                } catch(e) { console.error("Storage issue", e); }
+                
+                try { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; } catch(e) {}
+                
+                this.updateDashboard();
+                this.renderTable();
+                this.updateDataLists();
+            },
 
-        // Load Data safely
-        try {
-            var stored = localStorage.getItem('cg_inventory_v12');
-            if (stored) {
-                var parsed = JSON.parse(stored);
-                if (Object.prototype.toString.call(parsed) === '[object Array]') {
-                    inventory = parsed;
+            showToast: function(msg) {
+                var toast = document.getElementById('toast');
+                document.getElementById('toastMsg').innerText = msg;
+                toast.className = 'show';
+                setTimeout(function() { toast.className = ''; }, 3000);
+            },
+
+            saveState: function() {
+                try { window.localStorage.setItem('cg_inventory_final', JSON.stringify(this.inventory)); } catch(e) {}
+                this.updateDashboard();
+                this.updateDataLists();
+                this.renderTable();
+            },
+
+            switchTab: function(tab) {
+                try {
+                    document.getElementById('formTabContent').style.display = 'none';
+                    document.getElementById('listTabContent').style.display = 'none';
+                    document.getElementById('btnTabForm').className = 'tab-btn';
+                    document.getElementById('btnTabList').className = 'tab-btn';
+                    
+                    if(tab === 'list') {
+                        document.getElementById('listTabContent').style.display = 'block';
+                        document.getElementById('btnTabList').className = 'tab-btn active';
+                    } else {
+                        document.getElementById('formTabContent').style.display = 'block';
+                        document.getElementById('btnTabForm').className = 'tab-btn active';
+                    }
+                } catch(e) { alert("Tab Switch Error: " + e.message); }
+            },
+
+            getUnique: function(arr) {
+                var u = [];
+                for(var i=0; i<arr.length; i++) {
+                    if(arr[i] && u.indexOf(arr[i]) === -1) u.push(arr[i]);
                 }
-            }
-        } catch (e) {
-            console.log("Storage error");
-        }
+                return u;
+            },
 
-        window.onload = function() {
-            try { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; } catch(e) {}
-            updateDataLists();
-            updateDashboard();
-            renderTable();
-        };
-
-        function showToast(message) {
-            var toast = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = message;
-            toast.className = 'show';
-            setTimeout(function() { toast.className = ''; }, 3000);
-        }
-
-        function saveState() {
-            try { localStorage.setItem('cg_inventory_v12', JSON.stringify(inventory)); } catch(e) { }
-            updateDashboard();
-            updateDataLists();
-            renderTable();
-        }
-
-        function switchTab(tab) {
-            // FIXED: Using safe className overrides to avoid crashes
-            document.getElementById('formTabContent').className = 'dashboard-panel tab-content';
-            document.getElementById('listTabContent').className = 'list-panel tab-content';
-            document.getElementById('btnTabForm').className = 'tab-btn';
-            document.getElementById('btnTabList').className = 'tab-btn';
-            
-            if(tab === 'list') { 
-                document.getElementById('listTabContent').className = 'list-panel tab-content active';
-                document.getElementById('btnTabList').className = 'tab-btn active'; 
-            } else { 
-                document.getElementById('formTabContent').className = 'dashboard-panel tab-content active';
-                document.getElementById('btnTabForm').className = 'tab-btn active'; 
-            }
-        }
-
-        function getUnique(arr) {
-            var u = [];
-            for(var i=0; i<arr.length; i++) {
-                if(arr[i] && u.indexOf(arr[i]) === -1) u.push(arr[i]);
-            }
-            return u;
-        }
-
-        function updateDataLists() {
-            var names = [];
-       
+            updateDataLists: function() {
+                var names = [], suppliers = [], phones = [], addresses = [];
+                for(var i=0; i<this.inventory.length; i++) {
+                    names.push(this.inventory[i].name);
+                    suppliers.push(this.inventory[i].supplierName);
+                    phones.push(this.inventory[i].supplierPhone);
+          
