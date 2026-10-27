@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>☁️ Cloud Gallery - Inventory</title>
+    <style>
+        :root {
+            --primary: #4f46e5;
+            --primary-dark: #3730a3;
+            --secondary: #ec4899;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-light: #e2e8f0;
+            --radius-sm: 10px;
+            --radius-md: 16px;
+            --danger: #ef4444;
+            --success: #10b981;
+            --whatsapp: #25D366;
+            --sold-color: #f59e0b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { background: linear-gradient(135deg, #e0e7ff 0%, #f1f5f9 100%); padding: 10px; color: var(--text-main); min-height: 100vh; }
+        .app-container { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 14px; }
+        
+        .brand-header { background: var(--card-bg); padding: 20px; border-radius: var(--radius-md); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 2px solid #c7d2fe; text-align: center; position: relative; overflow: hidden; }
+        .brand-header::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 5px; background: linear-gradient(90deg, var(--primary), var(--secondary)); }
+        .brand-title { font-size: 24px; font-weight: 900; color: #1e3a8a; letter-spacing: 0.5px; text-transform: uppercase; }
+        .brand-address { font-size: 11.5px; font-weight: 600; color: var(--text-muted); margin-top: 6px; line-height: 1.4; }
+        .software-name { display: inline-block; margin-top: 12px; background: #e0e7ff; color: var(--primary-dark); padding: 6px 16px; border-radius: 30px; font-size: 12px; font-weight: 800; letter-spacing: 1px; }
+
+        .mobile-tabs { display: flex; background: var(--card-bg); padding: 8px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); gap: 8px; position: sticky; top: 5px; z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .tab-btn { flex: 1; padding: 12px; border: none; background: transparent; font-size: 14px; font-weight: 800; color: var(--text-muted); border-radius: 8px; cursor: pointer; transition: all 0.3s ease; text-align: center; }
+        .tab-btn.active { background: linear-gradient(135deg, var(--primary), #6366f1); color: white; box-shadow: 0 4px 10px rgba(99, 102, 241, 0.3); }
+
+        @media (min-width: 1024px) { 
+            .mobile-tabs { display: none; } 
+            .content-grid { display: grid; grid-template-columns: 420px 1fr; gap: 16px; align-items: start; } 
+            .tab-content { display: block !important; }
+        }
+
+        .dashboard-panel, .list-panel { background: var(--card-bg); padding: 18px; border-radius: var(--radius-md); box-shadow: 0 4px 15px rgba(0,0,0,0.05); border: 1px solid var(--border-light); }
+        .form-section-title { font-size: 13px; font-weight: 800; text-transform: uppercase; color: var(--primary-dark); margin: 18px 0 10px 0; border-left: 4px solid var(--secondary); padding-left: 8px; display: flex; align-items: center; gap: 6px; }
+        .form-section-title:first-child { margin-top: 0; }
+        .form-group { margin-bottom: 14px; }
+        .form-group label { display: block; font-size: 11.5px; font-weight: 700; margin-bottom: 5px; color: var(--text-muted); }
+        .form-group input, .form-group select { width: 100%; padding: 12px; border: 2px solid var(--border-light); border-radius: var(--radius-sm); font-size: 14px; outline: none; transition: 0.2s; background: #f8fafc; font-weight: 600; }
+        .form-group input:focus, .form-group select:focus { border-color: var(--primary); background: #ffffff; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        
+        .checkbox-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 6px; }
+        /* FIXED: Checkboxes now act as one giant clickable button */
+        .checkbox-item { display: flex; align-items: center; gap: 8px; background: #f8fafc; padding: 12px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); cursor: pointer; transition: 0.2s; user-select: none; font-size: 12px; font-weight: 700; color: var(--text-main); }
+        .checkbox-item:hover { background: #e0e7ff; border-color: #c7d2fe; }
+        .checkbox-item input { accent-color: var(--secondary); width: 18px; height: 18px; margin: 0; cursor: pointer; }
+
+        .btn { width: 100%; padding: 14px; border: none; border-radius: var(--radius-sm); font-size: 14px; font-weight: 800; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px; transition: all 0.2s; }
+        .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
+        .btn-outline { background-color: #f1f5f9; border: 2px solid var(--border-light); color: var(--text-main); }
+        
+        .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 6px; margin: 2px; }
+        .btn-whatsapp { background-color: var(--whatsapp); color: white; }
+        .btn-del { background-color: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
+        .btn-edit { background-color: #e0e7ff; color: var(--primary); border: 1px solid #c7d2fe; }
+        .btn-sold { background-color: #fef3c7; color: var(--sold-color); border: 1px solid #fde68a; }
+
+        .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-top: 24px; border-top: 2px dashed #cbd5e1; padding-top: 20px; }
+        .stat-card { background: linear-gradient(135deg, #ffffff, #f8fafc); padding: 14px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border-light); text-align: center; }
+        .stat-card h3 { font-size: 10px; color: var(--text-muted); text-transform: uppercase; font-weight: 800; }
+        .stat-card p { font-size: 16px; font-weight: 900; color: var(--primary-dark); margin-top: 6px; }
+
+        .manage-bar { display: none; background: #e0e7ff; padding: 12px; border-radius: var(--radius-sm); margin-bottom: 12px; gap: 10px; align-items: center; border: 1px solid #c7d2fe; }
+        .manage-bar.active { display: flex; flex-wrap: wrap; }
+        .bulk-checkbox { width: 18px; height: 18px; accent-color: var(--primary); cursor: pointer; }
+
+        .table-controls { display: flex; gap: 12px; margin-bottom: 16px; align-items: center; }
+        .search-bar { flex: 1; }
+        .table-wrapper { overflow-x: auto; border: 2px solid var(--border-light); border-radius: var(--radius-sm); background: white; }
+        table { width: 100%; border-collapse: collapse; font-size: 12.5px; min-width: 950px; }
+        th, td { padding: 14px 12px; text-align: left; border-bottom: 1px solid var(--border-light); }
+        th { background: #f8fafc; font-weight: 800; color: var(--text-muted); white-space: nowrap; font-size: 12px; text-transform: uppercase; }
+        tr:hover { background: #f1f5f9; }
+        
+        .sold-item td { text-decoration: line-through; opacity: 0.65; background-color: #f8fafc; }
+        .sold-badge { display: inline-block; background: var(--sold-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; margin-left: 6px; text-decoration: none !important;}
+        .warranty-badge { display: inline-block; background: var(--success); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; margin-top: 4px; text-decoration: none !important;}
+        .supplier-info { font-size: 10.5px; color: var(--text-muted); display: block; margin-top: 4px; font-weight: 600;}
+        .acc-tags { font-size: 10px; background: #e0e7ff; padding: 3px 6px; border-radius: 6px; color: var(--primary-dark); margin-right: 4px; font-weight: 700; border: 1px solid #c7d2fe; display: inline-block; margin-bottom: 4px; text-decoration: none !important;}
+        .actions-cell { display: flex; gap: 8px; flex-wrap: wrap; }
+
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+
+        #toast { position: fixed; bottom: 20px; right: 20px; background: #1e293b; color: white; padding: 14px 24px; border-radius: var(--radius-sm); font-size: 14px; font-weight: 700; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transform: translateY(100px); opacity: 0; transition: all 0.4s ease; z-index: 9999; display: flex; align-items: center; gap: 10px; }
+        #toast.show { transform: translateY(0); opacity: 1; }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <div class="brand-header">
+            <div class="brand-title">☁️ CLOUD GALLERY MEERUT</div>
+            <div class="brand-address">📍 B-392, CNG Road, near International Public School,<br>Radha Garden, Ganga Nagar, Meerut, Uttar Pradesh 250001</div>
+            <div class="software-name">✨ INVENTORY MANAGER ✨</div>
+        </div>
+
+        <div class="mobile-tabs">
+            <button type="button" class="tab-btn active" id="btnTabForm">➕ Add Entry</button>
+            <button type="button" class="tab-btn" id="btnTabList">📦 Stock List</button>
+        </div>
+
+        <div class="content-grid">
+            <div class="dashboard-panel tab-content active" id="formTabContent">
+                <input type="hidden" id="editId" value="">
+                
+                <div class="form-section-title">📱 Item Info</div>
+                <div class="form-group">
+                    <label>📅 Entry Date</label>
+                    <input type="date" id="entryDate">
+                </div>
+                <div class="form-group">
+                    <label>🏷️ Item Name / Model</label>
+                    <input type="text" id="itemName" placeholder="e.g. iPhone 15 Pro Max" list="itemNamesList">
+                    <datalist id="itemNamesList"></datalist>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📂 Category</label>
+                        <select id="itemCategory">
+                            <option value="Phones (Old/Used)">Phones (Old/Used)</option>
+                            <option value="Phones (New)">Phones (New)</option>
+                            <option value="Audio & Speakers">Audio & Speakers</option>
+                            <option value="Accessories">Accessories</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>🔢 IMEI / Serial (15 Digits)</label>
+                        <input type="text" id="itemImei" placeholder="Scan or Type..." maxlength="15">
+                    </div>
+                </div>
+
+                <div class="form-section-title">🏢 Supplier / Purchased From</div>
+                <div class="form-group">
+                    <label>👤 Person / Shop Name</label>
+                    <input type="text" id="supplierName" placeholder="e.g. Prince Mobile / Meerut" list="supplierNamesList">
+                    <datalist id="supplierNamesList"></datalist>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📞 Phone Number</label>
+                        <input type="text" id="supplierPhone" placeholder="10 Digits" list="supplierPhonesList" maxlength="10">
+                        <datalist id="supplierPhonesList"></datalist>
+                    </div>
+                    <div class="form-group">
+                        <label>📍 Location / Address</label>
+                        <input type="text" id="supplierAddress" placeholder="e.g. Saket, Meerut" list="supplierAddressList">
+                        <datalist id="supplierAddressList"></datalist>
+                    </div>
+                </div>
+
+                <div class="form-section-title">🔌 Included Accessories</div>
+                <!-- FIXED: Checkboxes wrapped in <label> so the text and emoji are clickable! -->
+                <div class="checkbox-grid" id="accessoriesGrid">
+                    <label class="checkbox-item"><input type="checkbox" value="Box"> 📦 Box</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Adapter"> 🔌 Adapter</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Cable"> ⚡ Cable</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Bill"> 🧾 Bill</label>
+                    <label class="checkbox-item"><input type="checkbox" value="Earphones"> 🎧 Earphones</label>
+                </div>
+
+                <div class="form-section-title">💰 Pricing & Quantity</div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>📉 Buy Price (₹)</label>
+                        <input type="number" id="purchasePrice" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group">
+                        <label>📈 Sell Price (₹)</label>
+                        <input type="number" id="sellingPrice" placeholder="0" min="0">
+                    </div>
+                    <div class="form-group" style="grid-column: span 2;">
+                        <label>📦 Total Quantity</label>
+                        <input type="number" id="itemQty" value="1" min="1">
+                    </div>
+                </div>
+
+                <!-- FIXED: Warranty Section wrapped in <label> so text is clickable! -->
+                <div class="form-section-title">🛡️ Warranty Details</div>
+                <div style="display: flex; gap: 20px; margin-bottom: 12px; background: #f8fafc; padding: 12px; border-radius: var(--radius-sm); border: 1px solid var(--border-light);">
+                    <label style="font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none;">
+                        <input type="radio" name="warrantyType" value="Out of Warranty" id="radioOutWarranty" checked style="accent-color: var(--primary); width: 18px; height: 18px;"> Out of Warranty
+                    </label>
+                    <label style="font-size: 13px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; user-select: none;">
+                        <input type="radio" name="warrantyType" value="In Warranty" id="radioInWarranty" style="accent-color: var(--primary); width: 18px; height: 18px;"> In Warranty
+                    </label>
+                </div>
+                <div class="form-group" id="warrantyInputGroup" style="display: none;">
+                    <input type="text" id="warrantyDetails" placeholder="Enter warranty details (e.g., 6 Months Brand Warranty)">
+                </div>
+
+                <div class="form-row" style="margin-top: 15px;">
+                    <button type="button" class="btn btn-primary" id="btnSaveData">💾 Save Entry</button>
+                    <button type="button" class="btn btn-outline" id="btnClearForm">✖ Clear</button>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card"><h3>📦 Total Items</h3><p id="statTotalItems">0</p></div>
+                    <div class="stat-card"><h3>💰 Stock Value</h3><p id="statTotalValue">₹0</p></div>
+                    <div class="stat-card"><h3>🗂️ Categories</h3><p id="statCategories">0</p></div>
+                </div>
+            </div>
+
+            <!-- List Panel -->
+            <div class="list-panel tab-content" id="listTabContent">
+                <div class="table-controls">
+                    <div class="form-group search-bar" style="margin: 0;">
+                        <input type="text" id="searchInput" placeholder="🔍 Search Item, IMEI, or Supplier...">
+                    </div>
+                    <button type="button" class="btn btn-outline" style="width: auto; padding: 12px 20px;" id="btnManageMode">⚙️ Manage</button>
+                </div>
+
+                <div class="manage-bar" id="manageBar">
+                    <button type="button" class="action-btn" style="background: var(--primary);" id="btnDownloadCSV">📊 Download CSV</button>
+                    <button type="button" class="action-btn btn-del" id="btnDeleteSelected">🗑️ Delete Selected</button>
+                    <span style="font-size: 11px; color: var(--primary-dark); font-weight: 700; margin-left: auto;">(Downloads full data if none selected)</span>
+                </div>
+
+                <div class="table-wrapper">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th id="thCheckbox" style="display: none; width: 40px;"><input type="checkbox" id="selectAllCb" class="bulk-checkbox"></th>
+                                <th>📱 Item Details</th>
+                                <th>🔢 IMEI / Stock</th>
+                                <th>🏢 Supplier Info</th>
+                                <th>💰 Price (₹)</th>
+                                <th>⚡ Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tableBody"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast">✨ <span id="toastMsg">Notification</span></div>
+
+    <script>
+        // GUARANTEED SAFE JAVASCRIPT - ALL INLINE HTML CLICKS REMOVED
+        var GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwVZagYANYt_89QMI0sEOey2b3ahjTGOx3hbYdpmdIvucB2lL3N1PwHoBk-Bt_nt21Pxg/exec"; 
+        
+        var inventory = [];
+        var isManageMode = false;
+
+        // Load Data safely
+        try {
+            var stored = localStorage.getItem('cg_inventory_app');
+            if (stored) {
+                var parsed = JSON.parse(stored);
+                if (Array.isArray(parsed)) { inventory = parsed; }
+            }
+        } catch (e) {
+            console.log("Storage error");
+        }
+
+        // --- HARDWIRED EVENT LISTENERS (Guaranteed to work) ---
+        window.onload = function() {
+            // Set Date
+            try { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; } catch(e) {}
+            
+            // Wire Tabs
+            document.getElementById('btnTabForm').addEventListener('click', function() { switchTab('form'); });
+            document.getElementById('btnTabList').addEventListener('click', function() { switchTab('list'); });
+            
+            // Wire Form Buttons
+            document.getElementById('btnSaveData').addEventListener('click', handleFormSubmit);
+            document.getElementById('btnClearForm').addEventListener('click', resetForm);
+            
+            // Wire Warranty Toggles
+            document.getElementById('radioOutWarranty').addEventListener('change', toggleWarrantyField);
+            document.getElementById('radioInWarranty').addEventListener('change', toggleWarrantyField);
+            
+            // Wire List Controls
+            document.getElementById('btnManageMode').addEventListener('click', toggleManageMode);
+            document.getElementById('btnDownloadCSV').addEventListener('click', downloadCSV);
+            document.getElementById('btnDeleteSelected').addEventListener('click', deleteSelected);
+            document.getElementById('selectAllCb').addEventListener('change', toggleSelectAll);
+            document.getElementById('searchInput').addEventListener('keyup', renderTable);
+            
+            // Prevent letters in numbers
+            document.getElementById('itemImei').addE
