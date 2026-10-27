@@ -62,7 +62,7 @@
         .btn-primary { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3); }
         .btn-outline { background-color: #f1f5f9; border: 2px solid var(--border-light); color: var(--text-main); }
         
-        .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; }
+        .action-btn { padding: 6px 12px; border-radius: 6px; font-size: 11px; font-weight: 800; border: none; cursor: pointer; color: white; display: inline-flex; align-items: center; gap: 6px; transition: 0.2s; margin: 2px; }
         .btn-whatsapp { background-color: var(--whatsapp); color: white; box-shadow: 0 2px 6px rgba(37, 211, 102, 0.3); }
         .btn-whatsapp svg { width: 14px; height: 14px; fill: currentColor; }
         .btn-del { background-color: #fee2e2; color: var(--danger); border: 1px solid #fecaca; }
@@ -89,7 +89,7 @@
         .sold-item td { text-decoration: line-through; opacity: 0.65; background-color: #f8fafc; }
         .sold-badge { display: inline-block; background: var(--sold-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; margin-left: 6px; }
         .supplier-info { font-size: 10.5px; color: var(--text-muted); display: block; margin-top: 4px; font-weight: 600;}
-        .acc-tags { font-size: 10px; background: #e0e7ff; padding: 3px 6px; border-radius: 6px; color: var(--primary-dark); margin-right: 4px; font-weight: 700; border: 1px solid #c7d2fe;}
+        .acc-tags { font-size: 10px; background: #e0e7ff; padding: 3px 6px; border-radius: 6px; color: var(--primary-dark); margin-right: 4px; font-weight: 700; border: 1px solid #c7d2fe; display: inline-block;}
         .actions-cell { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .tab-content { display: none; }
@@ -100,11 +100,6 @@
     </style>
 </head>
 <body>
-    <!-- DIAGNOSTIC ERROR BOX -->
-    <div id="jsDiagnostic" style="background: #ef4444; color: white; padding: 20px; text-align: center; font-weight: 900; font-size: 16px; border-bottom: 4px solid #b91c1c;">
-        🚨 ERROR: JAVASCRIPT IS BLOCKED! 🚨<br><br>
-        If you see this red box, your browser app is forcefully blocking the code from running. The buttons will not work until you open this file in a real web browser (like Google Chrome).
-    </div>
 
     <div class="app-container">
         <div class="brand-header">
@@ -114,12 +109,11 @@
         </div>
 
         <div class="mobile-tabs">
-            <button type="button" class="tab-btn active" id="btnTabForm">➕ Add Entry</button>
-            <button type="button" class="tab-btn" id="btnTabList">📦 Stock List</button>
+            <button type="button" class="tab-btn active" id="btnTabForm" onclick="switchTab('form')">➕ Add Entry</button>
+            <button type="button" class="tab-btn" id="btnTabList" onclick="switchTab('list')">📦 Stock List</button>
         </div>
 
         <div class="content-grid">
-            <!-- Form Panel -->
             <div class="dashboard-panel tab-content active" id="formTabContent">
                 <form id="inventoryForm" onsubmit="event.preventDefault(); return false;">
                     <input type="hidden" id="editId" value="">
@@ -146,7 +140,7 @@
                         </div>
                         <div class="form-group">
                             <label>🔢 IMEI / Serial (15 Digits)</label>
-                            <input type="text" id="itemImei" placeholder="Scan or Type..." maxlength="15" id="imeiInput">
+                            <input type="text" id="itemImei" placeholder="Scan or Type..." maxlength="15" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                         </div>
                     </div>
 
@@ -159,7 +153,7 @@
                     <div class="form-row">
                         <div class="form-group">
                             <label>📞 Phone Number</label>
-                            <input type="text" id="supplierPhone" placeholder="10 Digits" list="supplierPhonesList" maxlength="10">
+                            <input type="text" id="supplierPhone" placeholder="10 Digits" list="supplierPhonesList" maxlength="10" oninput="this.value = this.value.replace(/[^0-9]/g, '')">
                             <datalist id="supplierPhonesList"></datalist>
                         </div>
                         <div class="form-group">
@@ -195,8 +189,8 @@
                     </div>
 
                     <div class="form-row" style="margin-top: 10px;">
-                        <button type="button" class="btn btn-primary" id="btnSaveData">💾 Save Entry</button>
-                        <button type="button" class="btn btn-outline" id="btnClearForm">✖ Clear</button>
+                        <button type="button" class="btn btn-primary" id="btnSaveData" onclick="handleFormSubmit()">💾 Save Entry</button>
+                        <button type="button" class="btn btn-outline" onclick="resetForm()">✖ Clear</button>
                     </div>
 
                     <div class="stats-grid">
@@ -207,18 +201,17 @@
                 </form>
             </div>
 
-            <!-- List Panel -->
             <div class="list-panel tab-content" id="listTabContent">
                 <div class="table-controls">
                     <div class="form-group search-bar" style="margin: 0;">
-                        <input type="text" id="searchInput" placeholder="🔍 Search Item, IMEI, or Supplier...">
+                        <input type="text" id="searchInput" placeholder="🔍 Search Item, IMEI, or Supplier..." onkeyup="renderTable()">
                     </div>
-                    <button type="button" class="btn btn-outline" style="width: auto; padding: 12px 20px;" id="btnManage">⚙️ Manage</button>
+                    <button type="button" class="btn btn-outline" style="width: auto; padding: 12px 20px;" onclick="toggleManageMode()">⚙️ Manage</button>
                 </div>
 
                 <div class="manage-bar" id="manageBar">
-                    <button type="button" class="action-btn" style="background: var(--primary);" id="btnDownloadCSV">📊 Download CSV</button>
-                    <button type="button" class="action-btn btn-del" id="btnDeleteSelected">🗑️ Delete Selected</button>
+                    <button type="button" class="action-btn" style="background: var(--primary);" onclick="downloadCSV()">📊 Download CSV</button>
+                    <button type="button" class="action-btn btn-del" onclick="deleteSelected()">🗑️ Delete Selected</button>
                     <span style="font-size: 11px; color: var(--primary-dark); font-weight: 700; margin-left: auto;">(Downloads full data if none selected)</span>
                 </div>
 
@@ -226,7 +219,7 @@
                     <table id="inventoryTable">
                         <thead>
                             <tr>
-                                <th id="thCheckbox" style="display: none; width: 40px;"><input type="checkbox" id="selectAllCb" class="bulk-checkbox"></th>
+                                <th id="thCheckbox" style="display: none; width: 40px;"><input type="checkbox" id="selectAllCb" class="bulk-checkbox" onclick="toggleSelectAll()"></th>
                                 <th>📱 Item Details</th>
                                 <th>🔢 IMEI / Stock</th>
                                 <th>🏢 Supplier Info</th>
@@ -244,59 +237,82 @@
     <div id="toast">✨ <span id="toastMsg">Notification</span></div>
 
     <script>
-        // IF THIS SCRIPT RUNS, HIDE THE RED WARNING IMMEDIATELY
-        document.getElementById('jsDiagnostic').style.display = 'none';
+        // ==========================================
+        var GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwVZagYANYt_89QMI0sEOey2b3ahjTGOx3hbYdpmdIvucB2lL3N1PwHoBk-Bt_nt21Pxg/exec"; 
+        // ==========================================
 
-        const GOOGLE_SHEET_URL = "https://script.google.com/macros/s/AKfycbwVZagYANYt_89QMI0sEOey2b3ahjTGOx3hbYdpmdIvucB2lL3N1PwHoBk-Bt_nt21Pxg/exec"; 
-        
-        let inventory = [];
-        let isManageMode = false;
+        var inventory = [];
+        var isManageMode = false;
 
-        // LOAD DATA
+        // Load Data (ES5 Safe)
         try {
-            const stored = localStorage.getItem('cg_master_db');
+            var stored = localStorage.getItem('cg_inventory_v11');
             if (stored) {
-                inventory = JSON.parse(stored);
+                var parsed = JSON.parse(stored);
+                if (Object.prototype.toString.call(parsed) === '[object Array]') {
+                    inventory = parsed;
+                }
             }
         } catch (e) {
             console.log("Storage error");
         }
 
-        // --- PURE JAVASCRIPT EVENT LISTENERS (NO INLINE ONCLICK) ---
-        document.addEventListener('DOMContentLoaded', function() {
-            // Setup Tabs
-            document.getElementById('btnTabForm').addEventListener('click', function() { switchTab('form'); });
-            document.getElementById('btnTabList').addEventListener('click', function() { switchTab('list'); });
-            
-            // Setup Action Buttons
-            document.getElementById('btnSaveData').addEventListener('click', handleFormSubmit);
-            document.getElementById('btnClearForm').addEventListener('click', resetForm);
-            document.getElementById('btnManage').addEventListener('click', toggleManageMode);
-            document.getElementById('btnDownloadCSV').addEventListener('click', downloadCSV);
-            document.getElementById('btnDeleteSelected').addEventListener('click', deleteSelected);
-            document.getElementById('selectAllCb').addEventListener('change', toggleSelectAll);
-            document.getElementById('searchInput').addEventListener('keyup', renderTable);
-
-            // Setup Date
+        window.onload = function() {
             try { document.getElementById('entryDate').value = new Date().toISOString().split('T')[0]; } catch(e) {}
-
-            // Prevent letters in numbers
-            document.getElementById('itemImei').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
-            document.getElementById('supplierPhone').addEventListener('input', function(e) { this.value = this.value.replace(/[^0-9]/g, ''); });
-
-            // Initialize Data
             updateDataLists();
             updateDashboard();
             renderTable();
-        });
+        };
 
-        // --- CORE FUNCTIONS ---
         function showToast(message) {
-            const toast = document.getElementById('toast');
+            var toast = document.getElementById('toast');
             document.getElementById('toastMsg').innerText = message;
-            toast.classList.add('show');
-            setTimeout(function() { toast.classList.remove('show'); }, 3000);
+            toast.className = 'show';
+            setTimeout(function() { toast.className = ''; }, 3000);
         }
 
         function saveState() {
-            try { localStorage.setItem('cg_master_db', JSO
+            try { localStorage.setItem('cg_inventory_v11', JSON.stringify(inventory)); } catch(e) { }
+            updateDashboard();
+            updateDataLists();
+            renderTable();
+        }
+
+        function switchTab(tab) {
+            var contents = document.querySelectorAll('.tab-content');
+            for(var i=0; i<contents.length; i++) {
+                contents[i].className = 'dashboard-panel tab-content';
+            }
+            document.getElementById('btnTabForm').className = 'tab-btn';
+            document.getElementById('btnTabList').className = 'tab-btn';
+            
+            document.getElementById(tab + 'TabContent').className = 'dashboard-panel tab-content active';
+            if(tab === 'list') { 
+                document.getElementById('btnTabList').className = 'tab-btn active'; 
+            } else { 
+                document.getElementById('btnTabForm').className = 'tab-btn active'; 
+            }
+        }
+
+        function getUnique(arr) {
+            var u = [];
+            for(var i=0; i<arr.length; i++) {
+                if(arr[i] && u.indexOf(arr[i]) === -1) u.push(arr[i]);
+            }
+            return u;
+        }
+
+        function updateDataLists() {
+            var names = [];
+            var suppliers = [];
+            var phones = [];
+            var addresses = [];
+
+            for(var i=0; i<inventory.length; i++) {
+                names.push(inventory[i].name);
+                suppliers.push(inventory[i].supplierName);
+                phones.push(inventory[i].supplierPhone);
+                addresses.push(inventory[i].supplierAddress);
+            }
+
+            document.getElementById('it
