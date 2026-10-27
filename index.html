@@ -87,9 +87,9 @@
         tr:hover { background: #f1f5f9; }
         
         .sold-item td { text-decoration: line-through; opacity: 0.65; background-color: #f8fafc; }
-        .sold-badge { display: inline-block; background: var(--sold-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; margin-left: 6px; }
+        .sold-badge { display: inline-block; background: var(--sold-color); color: white; padding: 2px 6px; border-radius: 4px; font-size: 9px; font-weight: 800; margin-left: 6px; text-decoration: none !important; }
         .supplier-info { font-size: 10.5px; color: var(--text-muted); display: block; margin-top: 4px; font-weight: 600;}
-        .acc-tags { font-size: 10px; background: #e0e7ff; padding: 3px 6px; border-radius: 6px; color: var(--primary-dark); margin-right: 4px; font-weight: 700; border: 1px solid #c7d2fe; display: inline-block;}
+        .acc-tags { font-size: 10px; background: #e0e7ff; padding: 3px 6px; border-radius: 6px; color: var(--primary-dark); margin-right: 4px; font-weight: 700; border: 1px solid #c7d2fe; display: inline-block; text-decoration: none !important;}
         .actions-cell { display: flex; gap: 8px; flex-wrap: wrap; }
 
         .tab-content { display: none; }
@@ -109,6 +109,7 @@
         </div>
 
         <div class="mobile-tabs">
+            <!-- FIXED: Added correct IDs here so the JS can find them! -->
             <button type="button" class="tab-btn active" id="btnTabForm" onclick="switchTab('form')">➕ Add Entry</button>
             <button type="button" class="tab-btn" id="btnTabList" onclick="switchTab('list')">📦 Stock List</button>
         </div>
@@ -189,6 +190,7 @@
                     </div>
 
                     <div class="form-row" style="margin-top: 10px;">
+                        <!-- FIXED: Added correct ID here so JS can reset its text! -->
                         <button type="button" class="btn btn-primary" id="btnSaveData" onclick="handleFormSubmit()">💾 Save Entry</button>
                         <button type="button" class="btn btn-outline" onclick="resetForm()">✖ Clear</button>
                     </div>
@@ -201,6 +203,7 @@
                 </form>
             </div>
 
+            <!-- List Panel -->
             <div class="list-panel tab-content" id="listTabContent">
                 <div class="table-controls">
                     <div class="form-group search-bar" style="margin: 0;">
@@ -244,9 +247,9 @@
         var inventory = [];
         var isManageMode = false;
 
-        // Load Data (ES5 Safe)
+        // Load Data safely
         try {
-            var stored = localStorage.getItem('cg_inventory_v11');
+            var stored = localStorage.getItem('cg_inventory_v12');
             if (stored) {
                 var parsed = JSON.parse(stored);
                 if (Object.prototype.toString.call(parsed) === '[object Array]') {
@@ -272,24 +275,24 @@
         }
 
         function saveState() {
-            try { localStorage.setItem('cg_inventory_v11', JSON.stringify(inventory)); } catch(e) { }
+            try { localStorage.setItem('cg_inventory_v12', JSON.stringify(inventory)); } catch(e) { }
             updateDashboard();
             updateDataLists();
             renderTable();
         }
 
         function switchTab(tab) {
-            var contents = document.querySelectorAll('.tab-content');
-            for(var i=0; i<contents.length; i++) {
-                contents[i].className = 'dashboard-panel tab-content';
-            }
+            // FIXED: Using safe className overrides to avoid crashes
+            document.getElementById('formTabContent').className = 'dashboard-panel tab-content';
+            document.getElementById('listTabContent').className = 'list-panel tab-content';
             document.getElementById('btnTabForm').className = 'tab-btn';
             document.getElementById('btnTabList').className = 'tab-btn';
             
-            document.getElementById(tab + 'TabContent').className = 'dashboard-panel tab-content active';
             if(tab === 'list') { 
+                document.getElementById('listTabContent').className = 'list-panel tab-content active';
                 document.getElementById('btnTabList').className = 'tab-btn active'; 
             } else { 
+                document.getElementById('formTabContent').className = 'dashboard-panel tab-content active';
                 document.getElementById('btnTabForm').className = 'tab-btn active'; 
             }
         }
@@ -304,15 +307,4 @@
 
         function updateDataLists() {
             var names = [];
-            var suppliers = [];
-            var phones = [];
-            var addresses = [];
-
-            for(var i=0; i<inventory.length; i++) {
-                names.push(inventory[i].name);
-                suppliers.push(inventory[i].supplierName);
-                phones.push(inventory[i].supplierPhone);
-                addresses.push(inventory[i].supplierAddress);
-            }
-
-            document.getElementById('it
+       
