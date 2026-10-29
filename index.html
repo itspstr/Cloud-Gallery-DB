@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Cloud Gallery - Inventory Manager</title>
-    <!-- Google Identity Services for Contacts API -->
-    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <!-- HTML5 QRCode Scanner -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
@@ -32,6 +30,7 @@
             text-align: center;
             box-shadow: 0 4px 20px rgba(0,0,0,0.03);
             margin-bottom: 16px;
+            border-top: 4px solid #db2777;
         }
         .header-card h1 {
             color: #1e3a8a;
@@ -109,7 +108,7 @@
         .row { display: flex; gap: 12px; }
         .row .form-group { flex: 1; }
 
-        /* Scanner & Import Buttons inside flex rows */
+        /* Scanner & Import Buttons */
         .input-with-action { display: flex; gap: 8px; }
         .btn-action {
             background: var(--primary); color: white; border: none; border-radius: 12px;
@@ -203,39 +202,46 @@
         .close-scanner { margin-top: 20px; padding: 12px 30px; background: white; color: black; border-radius: 20px; font-weight: bold; border: none; }
         .spinner { border: 4px solid rgba(255,255,255,0.3); border-top: 4px solid white; border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin-bottom: 15px; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .toast { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 25px; border-radius: 30px; font-size: 14px; font-weight: 600; display: none; z-index: 10000; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+        
+        /* Updated modern toast centered with warning colors */
+        .toast {
+            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+            background: #1e293b; color: white; padding: 14px 24px; border-radius: 12px;
+            font-size: 13px; font-weight: 700; display: none; z-index: 10000;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3); text-align: center;
+        }
     </style>
 </head>
 <body>
 
     <div class="header-card">
-        <h1>☁️ CLOUD GALLERY MEERUT</h1>
-        <p>📍 B-392, CNG Road, near International Public School,<br>Radha Garden, Ganga Nagar, Meerut, Uttar Pradesh<br>250001</p>
-        <div class="pill-badge">✨ INVENTORY MANAGER ✨</div>
+        <h1>â˜ï¸ CLOUD GALLERY MEERUT</h1>
+        <p>ðŸ“ B-392, CNG Road, near International Public School,<br>Radha Garden, Ganga Nagar, Meerut, Uttar Pradesh<br>250001</p>
+        <div class="pill-badge">âœ¨ INVENTORY MANAGER âœ¨</div>
     </div>
 
     <div class="container">
         <!-- Tabs -->
         <div class="tabs">
-            <div class="tab active" id="tabAdd" onclick="switchTab('add')">➕ Add Entry</div>
-            <div class="tab inactive" id="tabList" onclick="switchTab('list')">📦 Stock List</div>
+            <div class="tab active" id="tabAdd" onclick="switchTab('add')">âž• Add Entry</div>
+            <div class="tab inactive" id="tabList" onclick="switchTab('list')">ðŸ“¦ Stock List</div>
         </div>
 
         <!-- ADD/EDIT FORM -->
         <div class="main-card" id="viewAdd">
             <input type="hidden" id="editId">
             
-            <div class="section-title">📱 ITEM INFO</div>
+            <div class="section-title">ðŸ“± ITEM INFO</div>
             <div class="form-group">
-                <label>📅 Entry Date</label>
+                <label>ðŸ“… Entry Date</label>
                 <input type="date" class="input-box" id="entryDate">
             </div>
             <div class="form-group">
-                <label>🏷️ Item Name / Model</label>
+                <label>ðŸ·ï¸ Item Name / Model</label>
                 <input type="text" class="input-box" id="itemName" placeholder="e.g. iPhone 15 Pro Max">
             </div>
             <div class="form-group">
-                <label>📁 Category</label>
+                <label>ðŸ“ Category</label>
                 <select class="input-box" id="itemCategory">
                     <option>Phones (Old/Used)</option>
                     <option>Phones (New)</option>
@@ -245,95 +251,99 @@
                 </select>
             </div>
 
-            <div class="section-title">🔢 IDENTIFIERS</div>
+            <div class="section-title">ðŸ”¢ IDENTIFIERS</div>
+            
+            <!-- Stacked Identifiers (Full width) -->
             <div class="form-group">
-                <label>🔢 IMEI 1 (15 Digits)</label>
+                <label>ðŸ”¢ IMEI 1 (15 Digits)</label>
                 <div class="input-with-action">
                     <input type="text" class="input-box" id="itemImei1" placeholder="Scan or Type..." maxlength="15" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                    <button class="btn-action" onclick="startScanner('itemImei1')">📷<br>Scan</button>
+                    <button class="btn-action" onclick="startScanner('itemImei1')">ðŸ“·<br>Scan</button>
                 </div>
             </div>
             <div class="form-group">
-                <label>🔢 IMEI 2 (15 Digits)</label>
+                <label>ðŸ”¢ IMEI 2 (15 Digits)</label>
                 <div class="input-with-action">
                     <input type="text" class="input-box" id="itemImei2" placeholder="Scan or Type..." maxlength="15" oninput="this.value=this.value.replace(/[^0-9]/g,'')">
-                    <button class="btn-action" onclick="startScanner('itemImei2')">📷<br>Scan</button>
+                    <button class="btn-action" onclick="startScanner('itemImei2')">ðŸ“·<br>Scan</button>
                 </div>
             </div>
             <div class="form-group">
-                <label>🔠 Serial Number</label>
+                <label>ðŸ”  Serial Number</label>
                 <div class="input-with-action">
                     <input type="text" class="input-box" id="itemSerial" placeholder="Scan or Type...">
-                    <button class="btn-action" onclick="startScanner('itemSerial')">📷<br>Scan</button>
+                    <button class="btn-action" onclick="startScanner('itemSerial')">ðŸ“·<br>Scan</button>
                 </div>
             </div>
 
-            <div class="section-title">🏢 SUPPLIER / PURCHASED FROM</div>
+            <div class="section-title">ðŸ¢ SUPPLIER / PURCHASED FROM</div>
             <div class="form-group">
-                <label>👤 Person / Shop Name</label>
+                <label>ðŸ‘¤ Person / Shop Name</label>
                 <input type="text" class="input-box" id="supplierName" placeholder="e.g. Prince Mobile">
             </div>
+            
+            <!-- Stacked Contact Info (Full width) -->
             <div class="form-group">
-                <label>📞 Phone Number</label>
+                <label>ðŸ“ž Phone Number</label>
                 <div class="input-with-action">
                     <input type="text" class="input-box" id="supplierPhone" placeholder="+91 98765 43210">
-                    <button class="btn-action import-btn" onclick="importContact()">📱<br>Import</button>
+                    <button class="btn-action import-btn" onclick="importContact()">ðŸ“±<br>Import</button>
                 </div>
             </div>
             <div class="form-group">
-                <label>📍 Location / Address</label>
+                <label>ðŸ“ Location / Address</label>
                 <input type="text" class="input-box" id="supplierAddress" placeholder="e.g. Saket, Meerut">
             </div>
 
-            <div class="section-title">🔌 INCLUDED ACCESSORIES</div>
+            <div class="section-title">ðŸ”Œ INCLUDED ACCESSORIES</div>
             <div class="acc-grid">
-                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Box"> 📦 Box</label>
-                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Adapter"> 🔌 Adapter</label>
-                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Cable"> ⚡ Cable</label>
-                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Bill"> 🧾 Bill</label>
-                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Earphones"> 🎧 Earphones</label>
+                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Box"> ðŸ“¦ Box</label>
+                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Adapter"> ðŸ”Œ Adapter</label>
+                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Cable"> âš¡ Cable</label>
+                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Bill"> ðŸ§¾ Bill</label>
+                <label class="acc-item"><input type="checkbox" class="acc-cb" value="Earphones"> ðŸŽ§ Earphones</label>
             </div>
 
-            <div class="section-title">💰 PRICING & QUANTITY</div>
+            <div class="section-title">ðŸ’° PRICING & QUANTITY</div>
             <div class="row">
                 <div class="form-group">
-                    <label>📉 Buy Price (₹)</label>
+                    <label>ðŸ“‰ Buy Price (â‚¹)</label>
                     <input type="number" class="input-box" id="buyPrice" placeholder="0">
                 </div>
                 <div class="form-group">
-                    <label>📈 Sell Price (₹)</label>
+                    <label>ðŸ“ˆ Sell Price (â‚¹)</label>
                     <input type="number" class="input-box" id="sellPrice" placeholder="0">
                 </div>
             </div>
             <div class="form-group">
-                <label>📦 Total Quantity</label>
+                <label>ðŸ“¦ Total Quantity</label>
                 <input type="number" class="input-box" id="itemQty" value="1">
             </div>
 
-            <div class="section-title">🛡️ WARRANTY DETAILS</div>
+            <div class="section-title">ðŸ›¡ï¸ WARRANTY DETAILS</div>
             <div class="radio-group">
                 <label><input type="radio" name="warranty" value="Out of Warranty" checked> Out of Warranty</label>
                 <label><input type="radio" name="warranty" value="In Warranty"> In Warranty</label>
             </div>
 
-            <div class="section-title">🧾 SUPPLIER BILL (OPTIONAL)</div>
+            <div class="section-title">ðŸ§¾ SUPPLIER BILL (OPTIONAL)</div>
             <div class="upload-area">
                 <div class="upload-desc">Upload a photo of the bill for records.</div>
                 <div class="upload-buttons">
-                    <button class="btn-gallery" onclick="document.getElementById('billGallery').click()">📂 Gallery</button>
-                    <button class="btn-camera" onclick="document.getElementById('billCamera').click()">📸 Camera</button>
+                    <button class="btn-gallery" onclick="document.getElementById('billGallery').click()">ðŸ“‚ Gallery</button>
+                    <button class="btn-camera" onclick="document.getElementById('billCamera').click()">ðŸ“¸ Camera</button>
                 </div>
                 <input type="file" id="billGallery" accept="image/*" onchange="handleSingleFile(this, 'billPreviewText')">
                 <input type="file" id="billCamera" accept="image/*" capture="environment" onchange="handleSingleFile(this, 'billPreviewText')">
                 <div id="billPreviewText" class="preview-text"></div>
             </div>
 
-            <div class="section-title">📸 DEVICE CONDITION PHOTOS</div>
+            <div class="section-title">ðŸ“¸ DEVICE CONDITION PHOTOS</div>
             <div class="upload-area">
                 <div class="upload-desc">Upload multiple photos of the device (front, back, scratches, etc.) for condition validation.</div>
                 <div class="upload-buttons">
-                    <button class="btn-gallery" onclick="document.getElementById('deviceGallery').click()">📂 Gallery</button>
-                    <button class="btn-camera" onclick="document.getElementById('deviceCamera').click()">📸 Camera</button>
+                    <button class="btn-gallery" onclick="document.getElementById('deviceGallery').click()">ðŸ“‚ Gallery</button>
+                    <button class="btn-camera" onclick="document.getElementById('deviceCamera').click()">ðŸ“¸ Camera</button>
                 </div>
                 <input type="file" id="deviceGallery" accept="image/*" multiple onchange="handleMultipleFiles(this)">
                 <input type="file" id="deviceCamera" accept="image/*" capture="environment" multiple onchange="handleMultipleFiles(this)">
@@ -341,21 +351,21 @@
             </div>
 
             <div class="form-actions">
-                <button class="btn-save" onclick="saveEntry()">💾 Save Entry</button>
-                <button class="btn-clear" onclick="clearForm()">✖ Clear</button>
+                <button class="btn-save" onclick="saveEntry()">ðŸ’¾ Save Entry</button>
+                <button class="btn-clear" onclick="clearForm()">âœ– Clear</button>
             </div>
         </div>
 
         <div class="stats-grid" id="statsGrid">
-            <div class="stat-box"><div class="lbl">📦 TOTAL ITEMS</div><div class="val" id="statTotal">0</div></div>
-            <div class="stat-box"><div class="lbl">💰 STOCK VALUE</div><div class="val" id="statValue">₹0</div></div>
-            <div class="stat-box"><div class="lbl">📁 CATEGORIES</div><div class="val" id="statCat">0</div></div>
+            <div class="stat-box"><div class="lbl">ðŸ“¦ TOTAL ITEMS</div><div class="val" id="statTotal">0</div></div>
+            <div class="stat-box"><div class="lbl">ðŸ’° STOCK VALUE</div><div class="val" id="statValue">â‚¹0</div></div>
+            <div class="stat-box"><div class="lbl">ðŸ“ CATEGORIES</div><div class="val" id="statCat">0</div></div>
         </div>
 
         <!-- STOCK LIST -->
         <div id="viewList" style="display: none;">
             <div class="form-group search-box">
-                <input type="text" class="input-box" id="searchBox" placeholder="🔍 Search Item, IMEI, Serial, Supplier..." oninput="renderList()">
+                <input type="text" class="input-box" id="searchBox" placeholder="ðŸ” Search Item, IMEI, Serial, Supplier..." oninput="renderList()">
             </div>
             <div id="inventoryContainer"></div>
         </div>
@@ -378,12 +388,10 @@
 
     <script>
         const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz8_UvGbXHwH4WcinOx0u5G_ma3ZuCEjCfUDzz6nQmrOsjF9UVSGuxkvb04oAhY3jDpQw/exec";
-        const GOOGLE_CLIENT_ID = '472957809137-dpl9v90hbuqsjlg5i4umsdogblee3crm.apps.googleusercontent.com';
         
         let inventoryData = [];
         let html5QrcodeScanner = null;
         let scanTargetId = null;
-        let tokenClient;
         
         let currentBillBase64 = "";
         let currentDevicePhotosBase64 = [];
@@ -405,78 +413,38 @@
 
         function showLoading(msg) { document.getElementById('loadingText').innerText = msg; document.getElementById('loadingOverlay').style.display = 'flex'; }
         function hideLoading() { document.getElementById('loadingOverlay').style.display = 'none'; }
-        function showToast(msg) { const t = document.getElementById('toastMsg'); t.innerText = msg; t.style.display = 'block'; setTimeout(() => { t.style.display = 'none'; }, 3000); }
+        
+        function showToast(msg, isError = false) { 
+            const t = document.getElementById('toastMsg'); 
+            t.innerText = msg; 
+            t.style.background = isError ? '#ef4444' : '#1e293b';
+            t.style.display = 'block'; 
+            setTimeout(() => { t.style.display = 'none'; }, 4000); 
+        }
 
-        /* --- GOOGLE CONTACTS IMPORT --- */
-        function importContact() {
-            if (!tokenClient) {
-                tokenClient = google.accounts.oauth2.initTokenClient({
-                    client_id: GOOGLE_CLIENT_ID,
-                    scope: 'https://www.googleapis.com/auth/contacts.readonly',
-                    callback: (tokenResponse) => {
-                        if (tokenResponse && tokenResponse.access_token) {
-                            showLoading("Fetching Contacts...");
-                            fetchGoogleContacts(tokenResponse.access_token);
+        /* --- NATIVE BROWSER CONTACTS IMPORT (ROLLED BACK) --- */
+        async function importContact() {
+            const supported = ('contacts' in navigator && 'ContactsManager' in window);
+            if (supported) {
+                try {
+                    const props = ['name', 'tel'];
+                    const opts = { multiple: false };
+                    const contacts = await navigator.contacts.select(props, opts);
+                    if (contacts.length > 0) {
+                        if(contacts[0].name && contacts[0].name.length > 0) {
+                            document.getElementById('supplierName').value = contacts[0].name[0];
                         }
-                    },
-                });
-            }
-            tokenClient.requestAccessToken();
-        }
-
-        async function fetchGoogleContacts(accessToken) {
-            try {
-                const response = await fetch('https://people.googleapis.com/v1/people/me/connections?personFields=names,phoneNumbers&pageSize=1000', {
-                    headers: { Authorization: `Bearer ${accessToken}` }
-                });
-                const data = await response.json();
-                hideLoading();
-                if (data.connections && data.connections.length > 0) showContactPickerModal(data.connections);
-                else alert("No contacts found. Make sure they are synced to this Google Account.");
-            } catch (err) { hideLoading(); alert("Failed to fetch contacts securely."); }
-        }
-
-        function showContactPickerModal(connections) {
-            const modal = document.createElement('div');
-            modal.id = 'googleContactModal';
-            modal.innerHTML = `
-                <div style="position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.6); z-index:99999; display:flex; justify-content:center; align-items:center;">
-                    <div style="background:#fff; width:90%; max-width:400px; height:75%; border-radius:20px; display:flex; flex-direction:column; overflow:hidden;">
-                        <div style="padding:20px; background:var(--primary); color:#fff; font-weight:800; font-size:16px; display:flex; justify-content:space-between;">
-                            <span>📱 Select Contact</span>
-                            <span onclick="document.getElementById('googleContactModal').remove()" style="cursor:pointer; font-size:22px;">×</span>
-                        </div>
-                        <div style="padding:15px; background:#f8fafc; border-bottom:1px solid #e2e8f0;">
-                            <input type="text" id="contactSearchBox" placeholder="Search name or number..." style="width:100%; padding:14px; border:1.5px solid #cbd5e1; border-radius:12px; outline:none; font-size:14px;">
-                        </div>
-                        <div id="googleContactList" style="flex:1; overflow-y:auto; padding:10px;"></div>
-                    </div>
-                </div>
-            `;
-            document.body.appendChild(modal);
-
-            const list = document.getElementById('googleContactList');
-            const renderCList = (filter = '') => {
-                list.innerHTML = '';
-                connections.forEach(person => {
-                    const name = person.names ? person.names[0].displayName : '';
-                    const phone = person.phoneNumbers ? person.phoneNumbers[0].value : '';
-                    if (!name && !phone) return;
-                    if (name.toLowerCase().includes(filter.toLowerCase()) || phone.includes(filter)) {
-                        const div = document.createElement('div');
-                        div.style.cssText = "padding:16px; border-bottom:1px solid #f1f5f9; cursor:pointer;";
-                        div.innerHTML = `<div style="font-weight:800; color:#0f172a;">${name || 'Unknown'}</div><div style="font-size:12px; font-weight:600; color:#64748b; margin-top:4px;">${phone}</div>`;
-                        div.onclick = () => {
-                            document.getElementById('supplierName').value = name;
-                            document.getElementById('supplierPhone').value = phone;
-                            modal.remove(); showToast("Contact Imported ✨");
-                        };
-                        list.appendChild(div);
+                        if(contacts[0].tel && contacts[0].tel.length > 0) {
+                            document.getElementById('supplierPhone').value = contacts[0].tel[0];
+                        }
+                        showToast("Contact Imported! âœ¨");
                     }
-                });
-            };
-            renderCList();
-            document.getElementById('contactSearchBox').oninput = (e) => renderCList(e.target.value);
+                } catch (err) {
+                    showToast("Contact picking cancelled.");
+                }
+            } else {
+                showToast("âš ï¸ Your browser does not support automatic contact import.", true);
+            }
         }
 
         /* --- BARCODE SCANNER --- */
@@ -488,9 +456,9 @@
             html5QrcodeScanner.start({ facingMode: "environment" }, config, 
                 (decodedText) => {
                     document.getElementById(scanTargetId).value = decodedText;
-                    stopScanner(); showToast("Scanned Successfully! ✅");
+                    stopScanner(); showToast("Scanned Successfully! âœ…");
                 }, (err) => {}
-            ).catch(err => { alert("Camera error."); stopScanner(); });
+            ).catch(err => { alert("Camera error. Please ensure permissions are granted."); stopScanner(); });
         }
         function stopScanner() {
             if (html5QrcodeScanner) { html5QrcodeScanner.stop().then(() => { html5QrcodeScanner.clear(); }).catch(e => console.log(e)); }
@@ -527,26 +495,30 @@
             });
         }
 
-        /* --- BACKEND --- */
+        /* --- BACKEND DB FUNCTIONS --- */
         async function fetchData() {
             showLoading("Syncing Database...");
             try {
-                const response = await fetch(SCRIPT_URL);
+                // Using redirect mode to follow Google Apps Script redirects
+                const response = await fetch(SCRIPT_URL, { redirect: "follow" });
+                if (!response.ok) throw new Error("Network response was not ok");
                 inventoryData = await response.json();
                 updateStats(); renderList();
-            } catch (err) { showToast("Failed to fetch data."); }
+            } catch (err) { 
+                showToast("âš ï¸ Failed to fetch data. Check Apps Script deployment.", true); 
+            }
             hideLoading();
         }
 
         function updateStats() {
             const available = inventoryData.filter(i => i.status !== "Sold Out");
             document.getElementById('statTotal').innerText = available.reduce((acc, curr) => acc + parseInt(curr.qty || 1), 0);
-            document.getElementById('statValue').innerText = '₹' + available.reduce((acc, curr) => acc + (parseInt(curr.purchasePrice || 0) * parseInt(curr.qty || 1)), 0);
+            document.getElementById('statValue').innerText = 'â‚¹' + available.reduce((acc, curr) => acc + (parseInt(curr.purchasePrice || 0) * parseInt(curr.qty || 1)), 0);
             document.getElementById('statCat').innerText = new Set(available.map(i => i.category)).size;
         }
 
         async function saveEntry() {
-            if (!document.getElementById('itemName').value) { alert("Item Name is required!"); return; }
+            if (!document.getElementById('itemName').value) { showToast("âš ï¸ Item Name is required!", true); return; }
             showLoading("Saving to Master Database...");
             const editId = document.getElementById('editId').value;
             const action = editId ? "update" : "add";
@@ -574,29 +546,47 @@
             if (editId) { const existing = inventoryData.find(i => i.id === editId); if (existing) payload.status = existing.status; }
 
             try {
-                await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify(payload) });
-                showToast("Saved Successfully! ✅"); clearForm(); fetchData(); switchTab('list');
-            } catch (err) { showToast("Error saving entry."); hideLoading(); }
+                const response = await fetch(SCRIPT_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify(payload),
+                    redirect: "follow"
+                });
+                if (!response.ok) throw new Error("Network response was not ok");
+                showToast("Saved Successfully! âœ…"); clearForm(); fetchData(); switchTab('list');
+            } catch (err) { 
+                showToast("âš ï¸ Error saving entry. Check Apps Script permissions.", true); 
+                hideLoading(); 
+            }
         }
 
         async function updateStatus(id, newStatus) {
             showLoading("Updating Status...");
             try {
-                await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus }) });
-                showToast("Status Updated! ✅"); fetchData();
-            } catch (err) { showToast("Update failed."); hideLoading(); }
+                const response = await fetch(SCRIPT_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify({ action: "updateStatus", id: id, status: newStatus }),
+                    redirect: "follow"
+                });
+                if (!response.ok) throw new Error("Failed update");
+                showToast("Status Updated! âœ…"); fetchData();
+            } catch (err) { showToast("âš ï¸ Update failed.", true); hideLoading(); }
         }
 
         async function deleteItem(id) {
             if (!confirm("Delete this entry permanently?")) return;
             showLoading("Deleting Entry...");
             try {
-                await fetch(SCRIPT_URL, { method: "POST", body: JSON.stringify({ action: "delete", ids: [id] }) });
-                showToast("Deleted! 🗑️"); fetchData();
-            } catch (err) { showToast("Delete failed."); hideLoading(); }
+                const response = await fetch(SCRIPT_URL, { 
+                    method: "POST", 
+                    body: JSON.stringify({ action: "delete", ids: [id] }),
+                    redirect: "follow"
+                });
+                if (!response.ok) throw new Error("Failed delete");
+                showToast("Deleted! ðŸ—‘ï¸"); fetchData();
+            } catch (err) { showToast("âš ï¸ Delete failed.", true); hideLoading(); }
         }
 
-        /* --- LIST --- */
+        /* --- RENDER LIST --- */
         function renderList() {
             const container = document.getElementById('inventoryContainer'); container.innerHTML = "";
             const query = document.getElementById('searchBox').value.toLowerCase();
@@ -604,7 +594,7 @@
                 const s = `${item.name} ${item.imei1} ${item.imei2} ${item.serialNumber} ${item.supplierName}`.toLowerCase();
                 return s.includes(query);
             });
-            if (filtered.length === 0) { container.innerHTML = `<div style="text-align:center; padding:30px; color:#64748b;">No items found.</div>`; return; }
+            if (filtered.length === 0) { container.innerHTML = `<div style="text-align:center; padding:30px; color:#64748b; font-weight: 600;">No items found.</div>`; return; }
 
             filtered.forEach(item => {
                 const isSold = item.status === "Sold Out";
@@ -625,17 +615,17 @@
                     <div class="inv-meta">
                         <div>Supplier: <strong>${item.supplierName || '-'}</strong></div>
                         <div>Date: <strong>${formatDate(item.date)}</strong></div>
-                        <div>Buy: <strong>₹${item.purchasePrice || 0}</strong></div>
-                        <div>Sell: <strong>₹${item.sellingPrice || 0}</strong></div>
-                        ${item.billUrl ? `<div style="grid-column: span 2"><a href="${item.billUrl}" target="_blank" style="color:var(--primary); font-weight:800;">📄 View Bill / Photos</a></div>` : ''}
+                        <div>Buy: <strong>â‚¹${item.purchasePrice || 0}</strong></div>
+                        <div>Sell: <strong>â‚¹${item.sellingPrice || 0}</strong></div>
+                        ${item.billUrl ? `<div style="grid-column: span 2"><a href="${item.billUrl}" target="_blank" style="color:var(--primary); font-weight:800;">ðŸ“„ View Bill / Photos</a></div>` : ''}
                     </div>
                     <div class="card-btns">
-                        <button class="c-btn c-edit" onclick='editItem(${JSON.stringify(item).replace(/'/g, "&apos;")})'>✏️ Edit</button>
+                        <button class="c-btn c-edit" onclick='editItem(${JSON.stringify(item).replace(/'/g, "&apos;")})'>âœï¸ Edit</button>
                         <button class="c-btn c-sold" onclick="updateStatus('${item.id}', '${isSold ? 'Available' : 'Sold Out'}')">
-                            ${isSold ? '⏪ Mark Avail' : '🤝 Mark Sold'}
+                            ${isSold ? 'âª Mark Avail' : 'ðŸ¤ Mark Sold'}
                         </button>
-                        <button class="c-btn c-ebill" onclick="window.open('${ebillLink}','_blank')">🧾 Gen E-Bill</button>
-                        <button class="c-btn c-del" onclick="deleteItem('${item.id}')">🗑️ Delete</button>
+                        <button class="c-btn c-ebill" onclick="window.open('${ebillLink}','_blank')">ðŸ§¾ Gen E-Bill</button>
+                        <button class="c-btn c-del" onclick="deleteItem('${item.id}')">ðŸ—‘ï¸ Delete</button>
                     </div>
                 `;
                 container.appendChild(card);
